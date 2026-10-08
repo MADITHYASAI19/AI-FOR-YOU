@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "deslop/unused-file": "off",
+    "react-doctor/prefer-useReducer": "off",
+    "react-doctor/no-giant-component": "off",
+    "react-doctor/no-event-handler": "off",
+    "react-doctor/no-initialize-state": "off",
+    "react-doctor/no-derived-state": "off",
+    "react-doctor/no-chain-state-updates": "off"
+  }
+}

@@ -1,0 +1,182 @@
+/* ========================================================================
+   PREMIUM CURSOR — DREI RAUM–INSPIRED
+   Two-layer custom cursor with spring physics and GPU acceleration.
+   ======================================================================== */
+
+/* --- Layer 1: Cursor Dot (exact pointer position) --- */
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  margin-top: -3px;
+  background: #ffffff;
+  border-radius: 50%;
+  z-index: 100001;
+  pointer-events: none;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  /* GPU layer promotion */
+  transform: translate3d(-100px, -100px, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* --- Layer 2: Cursor Follower (spring-driven ring) --- */
+.cursor-follower {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 48px;
+  height: 48px;
+  margin-left: -24px;
+  margin-top: -24px;
+  border-radius: 50%;
+  z-index: 100000;
+  pointer-events: none;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  /* GPU layer promotion */
+  transform: translate3d(-100px, -100px, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* --- Follower: Idle state --- */
+.cursor-follower__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  background: transparent;
+  transition:
+    width 260ms cubic-bezier(0.23, 1, 0.32, 1),
+    height 260ms cubic-bezier(0.23, 1, 0.32, 1),
+    margin 260ms cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 260ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 260ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 260ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* --- Follower: Glow layer (hidden in idle) --- */
+.cursor-follower__glow {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center,
+      rgba(56, 189, 248, 0.0) 0%,
+      rgba(14, 165, 233, 0.0) 40%,
+      rgba(14, 165, 233, 0.0) 100%);
+  opacity: 0;
+  filter: blur(0px);
+  transition:
+    opacity 260ms cubic-bezier(0.23, 1, 0.32, 1),
+    filter 260ms cubic-bezier(0.23, 1, 0.32, 1),
+    inset 260ms cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+}
+
+/* ========================================================================
+   HOVER STATE
+   Larger circle, sky blue outline, soft radial glow
+   ======================================================================== */
+.cursor-follower--hover .cursor-follower__ring {
+  width: 84px;
+  height: 84px;
+  /* Re-center the enlarged ring */
+  margin-left: -18px;
+  margin-top: -18px;
+  border-color: rgba(56, 189, 248, 0.55);
+  box-shadow:
+    0 0 20px rgba(56, 189, 248, 0.12),
+    0 0 40px rgba(14, 165, 233, 0.06);
+}
+
+.cursor-follower--hover .cursor-follower__glow {
+  inset: -20px;
+  opacity: 1;
+  filter: blur(6px);
+  background: radial-gradient(circle at center,
+      rgba(56, 189, 248, 0.25) 0%,
+      rgba(14, 165, 233, 0.12) 45%,
+      rgba(14, 165, 233, 0.0) 100%);
+}
+
+/* ========================================================================
+   PRESSED STATE
+   Slight compression + brighter glow
+   Scale is handled via JS transform for GPU perf.
+   ======================================================================== */
+.cursor-follower--pressed .cursor-follower__ring {
+  border-color: rgba(56, 189, 248, 0.70);
+  box-shadow:
+    0 0 24px rgba(56, 189, 248, 0.20),
+    0 0 48px rgba(14, 165, 233, 0.10);
+  transition:
+    border-color 70ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 70ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.cursor-follower--pressed .cursor-follower__glow {
+  opacity: 1;
+  filter: blur(8px);
+  background: radial-gradient(circle at center,
+      rgba(56, 189, 248, 0.35) 0%,
+      rgba(14, 165, 233, 0.18) 45%,
+      rgba(14, 165, 233, 0.0) 100%);
+  transition:
+    opacity 70ms cubic-bezier(0.23, 1, 0.32, 1),
+    filter 70ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* When pressed WITHOUT hover (idle click), use white tones */
+.cursor-follower--pressed:not(.cursor-follower--hover) .cursor-follower__ring {
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 0 16px rgba(255, 255, 255, 0.12),
+    0 0 32px rgba(255, 255, 255, 0.05);
+}
+
+.cursor-follower--pressed:not(.cursor-follower--hover) .cursor-follower__glow {
+  opacity: 0.5;
+  filter: blur(4px);
+  background: radial-gradient(circle at center,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      transparent 100%);
+}
+
+/* ========================================================================
+   IDLE BREATHING RGB EFFECT
+   Smooth color cycling with gentle glow pulse when cursor is stationary.
+   ======================================================================== */
+@keyframes cursor-breathe-border {
+  0%   { border-color: rgba(167, 139, 250, 0.50); box-shadow: 0 0 12px rgba(167, 139, 250, 0.15), 0 0 24px rgba(167, 139, 250, 0.06); }
+  20%  { border-color: rgba(56, 189, 248, 0.50);  box-shadow: 0 0 14px rgba(56, 189, 248, 0.18), 0 0 28px rgba(56, 189, 248, 0.07); }
+  40%  { border-color: rgba(236, 72, 153, 0.50);  box-shadow: 0 0 16px rgba(236, 72, 153, 0.18), 0 0 32px rgba(236, 72, 153, 0.07); }
+  60%  { border-color: rgba(52, 211, 153, 0.50);  box-shadow: 0 0 14px rgba(52, 211, 153, 0.18), 0 0 28px rgba(52, 211, 153, 0.07); }
+  80%  { border-color: rgba(251, 191, 36, 0.50);  box-shadow: 0 0 12px rgba(251, 191, 36, 0.15), 0 0 24px rgba(251, 191, 36, 0.06); }
+  100% { border-color: rgba(167, 139, 250, 0.50); box-shadow: 0 0 12px rgba(167, 139, 250, 0.15), 0 0 24px rgba(167, 139, 250, 0.06); }
+}
+
+@keyframes cursor-breathe-glow {
+  0%   { background: radial-gradient(circle at center, rgba(167, 139, 250, 0.18) 0%, rgba(167, 139, 250, 0.06) 50%, transparent 100%); }
+  20%  { background: radial-gradient(circle at center, rgba(56, 189, 248, 0.22) 0%, rgba(56, 189, 248, 0.08) 50%, transparent 100%); }
+  40%  { background: radial-gradient(circle at center, rgba(236, 72, 153, 0.22) 0%, rgba(236, 72, 153, 0.08) 50%, transparent 100%); }
+  60%  { background: radial-gradient(circle at center, rgba(52, 211, 153, 0.22) 0%, rgba(52, 211, 153, 0.08) 50%, transparent 100%); }
+  80%  { background: radial-gradient(circle at center, rgba(251, 191, 36, 0.18) 0%, rgba(251, 191, 36, 0.06) 50%, transparent 100%); }
+  100% { background: radial-gradient(circle at center, rgba(167, 139, 250, 0.18) 0%, rgba(167, 139, 250, 0.06) 50%, transparent 100%); }
+}
+
+@keyframes cursor-breathe-scale {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+
+.cursor-follower--idle .cursor-follower__ring {
+  animation: cursor-breathe-border 4s ease-in-out infinite;
+}

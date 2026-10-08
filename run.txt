@@ -1,0 +1,47 @@
+========================================================================
+ FULLAIML — AI-Powered Data Analysis & Machine Learning Platform
+========================================================================
+
+RUNNING APPLICATION LINKS:
+------------------------------------------------------------------------
+• Frontend Application:        http://localhost:5173
+• Backend API Base URL:        http://localhost:8000
+• Backend Root Health Check:   http://localhost:8000/
+• Interactive API Docs (Swagger): http://localhost:8000/docs
+• Alternative API Docs (ReDoc):   http://localhost:8000/redoc
+
+
+ACTIVE SERVICES STATUS:
+------------------------------------------------------------------------
+• PostgreSQL Database: ACTIVE (Connected: postgresql://localhost:5432/fullaiml)
+• Backend API (FastAPI): ACTIVE (Running on http://localhost:8000)
+• Frontend (Vite + React): ACTIVE (Running on http://localhost:5173)
+
+
+BACKEND ENVIRONMENT CONFIGURATION (Backend/.env):
+------------------------------------------------------------------------
+SECRET_KEY=chin_tapaku_tam_tam
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+DATABASE_URL=postgresql://postgres:postgres123@localhost:5432/fullaiml
+
+
+FRONTEND ENVIRONMENT CONFIGURATION (frontend/.env):
+------------------------------------------------------------------------
+VITE_API_URL=http://localhost:8000
+VITE_GOOGLE_CLIENT_ID=797010593697-58penl4vn76f3lqhhekd9bk69kjmpkav.apps.googleusercontent.com
+
+
+HOW TO RUN / RESTART SERVICES:
+------------------------------------------------------------------------
+1. Backend (FastAPI with Uvicorn):
+   python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+2. Frontend (Vite Dev Server):
+   cd frontend
+   npm run dev -- --host 0.0.0.0 --port 5173
+
+3. Quick Test Command (Verify Backend is alive):
+   curl http://localhost:8000/
+   curl -X POST http://localhost:8000/demo/api-key
+========================================================================
